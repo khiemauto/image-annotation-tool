@@ -453,9 +453,9 @@ class Labeler_Widget(Ui_labeler_widget, QWidget):
 
         for button in self.label_buttons:
             if button.text() in assigned_labels:
-                button.setStyleSheet('border: 1px solid #43A047; background-color: #4CAF50; color: white')
+                button.setStyleSheet('background-color: #4CAF50')
             else:
-                button.setStyleSheet('background-color: None')
+                button.setStyleSheet('')
 
     def closeEvent(self, event):
         """
@@ -542,8 +542,10 @@ class Main_Window(Ui_main_window, QMainWindow):
                                         self.labeler_widget.assigned_labels[img_name] = [labels[i]]
                                     else:
                                         self.labeler_widget.assigned_labels[img_name].append(labels[i])
-
                 self.setCentralWidget(self.labeler_widget)
+                firstFileName = os.path.split(self.labeler_widget.img_paths[0])[-1]
+                self.labeler_widget.set_button_color(firstFileName)
+
 
         elif self.sender() == self.action_about:
             QMessageBox.information(self, "About", "<h3>Khiem Tran</h3><br/><p>Image annotation tool</p>")
