@@ -7,7 +7,7 @@ import numpy as np
 from PySide2 import QtWidgets
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QIcon, QPixmap, QIntValidator, QKeySequence
-from PySide2.QtWidgets import QApplication, QDial, QDialog, QMainWindow, QMessageBox, QWidget, QLabel, QCheckBox, QFileDialog, QDesktopWidget, QLineEdit, \
+from PySide2.QtWidgets import QApplication, QDial, QDialog, QMainWindow, QMessageBox, QStatusBar, QWidget, QLabel, QCheckBox, QFileDialog, QDesktopWidget, QLineEdit, \
     QRadioButton, QShortcut, QScrollArea, QVBoxLayout, QGroupBox, QFormLayout, QPushButton
 from xlsxwriter.workbook import Workbook
 
@@ -45,8 +45,8 @@ def make_folder(directory):
 
 
 class New_Dialog(Ui_new_dialog, QDialog):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent):
+        super().__init__(parent=parent)
         self.setupUi(self)
 
         # State variables
@@ -142,8 +142,8 @@ class New_Dialog(Ui_new_dialog, QDialog):
             QMessageBox.warning(self, "Warning", message)
 
 class Open_Dialog(Ui_open_dialog, QDialog):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, parent) -> None:
+        super().__init__(parent=parent)
         self.setupUi(self)
 
         self.img_paths = []
@@ -190,9 +190,11 @@ class Open_Dialog(Ui_open_dialog, QDialog):
             QMessageBox.warning(self, "Warning", message)
 
 class Labeler_Widget(Ui_labeler_widget, QWidget):
-    def __init__(self, labels, input_folder, img_paths, mode):
-        super().__init__()
+    def __init__(self, parent, labels, input_folder, img_paths, mode):
+        super().__init__(parent)
         self.setupUi(self)
+
+        self.parent: Main_Window = parent
 
         # state variables
         self.counter = 0
@@ -415,6 +417,8 @@ class Labeler_Widget(Ui_labeler_widget, QWidget):
                 writer.writerow([img_name] + list(labels_one_hot))
 
         message = f'csv saved to: {csv_file_path}'
+        # QStatusBar.showMessage(self, )
+        self.parent.statusbar.showMessage(message, 5000)
         # self.csv_generated_message.setText(message)
         # print(message)
 
@@ -496,8 +500,8 @@ class Main_Window(Ui_main_window, QMainWindow):
         self.setupUi(self)
         self.setWindowIcon(QIcon(":/icons/icon.png"))
         
-        self.new_dialog = New_Dialog()
-        self.open_dialog = Open_Dialog()
+        self.new_dialog = New_Dialog(self)
+        self.open_dialog = Open_Dialog(self)
         self.labeler_widget: Labeler_Widget = None
 
         self.assigned_labels = {}
@@ -512,7 +516,7 @@ class Main_Window(Ui_main_window, QMainWindow):
             if ret == QDialog.Accepted:
                 if self.labeler_widget is not None:
                     self.labeler_widget.deleteLater()
-                self.labeler_widget = Labeler_Widget(self.new_dialog.label_values, self.new_dialog.selected_folder, self.new_dialog.img_paths, self.new_dialog.mode)
+                self.labeler_widget = Labeler_Widget(self, self.new_dialog.label_values, self.new_dialog.selected_folder, self.new_dialog.img_paths, self.new_dialog.mode)
                 self.setCentralWidget(self.labeler_widget)
 
         elif self.sender() == self.action_open:
@@ -528,7 +532,7 @@ class Main_Window(Ui_main_window, QMainWindow):
 
                     if self.labeler_widget is not None:
                         self.labeler_widget.deleteLater()
-                    self.labeler_widget = Labeler_Widget(labels, selected_folder, self.open_dialog.img_paths, 'csv')
+                    self.labeler_widget = Labeler_Widget(self, labels, selected_folder, self.open_dialog.img_paths, 'csv')
 
                     for row in reader:
                         img_name = row[0]
