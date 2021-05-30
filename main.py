@@ -54,7 +54,7 @@ class New_Dialog(Ui_new_dialog, QDialog):
         self.img_paths = []
 
         # UI update
-        self.numLabelsInput.setValidator(QIntValidator())
+        self.numLabelsInput.setValidator(QIntValidator(self.numLabelsInput))
         self.scroll_area_widget.setLayout(QFormLayout(self.scroll_area_widget))
 
         # Connect
@@ -77,8 +77,7 @@ class New_Dialog(Ui_new_dialog, QDialog):
         """
         shows a dialog to choose folder with images to label
         """
-        dialog = QFileDialog()
-        folder_path = dialog.getExistingDirectory(None, "Select Folder")
+        folder_path = QFileDialog.getExistingDirectory(self, "Select Folder", options=QFileDialog.ShowDirsOnly|QFileDialog.DontUseNativeDialog)
 
         self.selected_folder_label.setText(folder_path)
         self.selected_folder = folder_path
@@ -152,14 +151,12 @@ class Open_Dialog(Ui_open_dialog, QDialog):
         self.buttonBox.accepted.connect(self.continue_app)
 
     def pick_images_folder(self):
-        dialog = QFileDialog()
-        folder_path = dialog.getExistingDirectory(self, "Select Folder")
+        folder_path = QFileDialog.getExistingDirectory(self, "Select Folder", "", options=QFileDialog.ShowDirsOnly|QFileDialog.DontUseNativeDialog)
 
         self.selected_folder_label.setText(folder_path)
 
     def pick_csv_file(self):
-        csv_path, _ = QFileDialog.getOpenFileName(self, "Select csv", "",
-                                                  "csv files (*.csv)")
+        csv_path, _ = QFileDialog.getOpenFileName(self, "Select csv", filter="csv files (*.csv)", options=QFileDialog.DontUseNativeDialog)
         self.selected_csv_label.setText(csv_path)
 
     def check_validity(self):
@@ -527,7 +524,7 @@ class Main_Window(Ui_main_window, QMainWindow):
 
                     if self.labeler_widget is not None:
                         self.labeler_widget.deleteLater()
-                    self.labeler_widget = Labeler_Widget(labels, selected_folder, self.new_dialog.img_paths, 'csv')
+                    self.labeler_widget = Labeler_Widget(labels, selected_folder, self.open_dialog.img_paths, 'csv')
 
                     for row in reader:
                         img_name = row[0]
