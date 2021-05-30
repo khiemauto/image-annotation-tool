@@ -36,7 +36,7 @@ label(s) to these images.
     cd image-annotation-tool
     pip install -r requirements.txt
     ```
-3. Conver UI file to python file
+3. (Optional) Conver UI file to python file
     ```bash
     pyside2-uic ui/labeler_widget.ui >> ui/labeler_widget.py
     pyside2-uic ui/main_window.ui >> ui/main_window.py
