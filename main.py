@@ -6,7 +6,7 @@ import sys
 import numpy as np
 from PySide2 import QtWidgets
 from PySide2.QtCore import Qt
-from PySide2.QtGui import QPixmap, QIntValidator, QKeySequence
+from PySide2.QtGui import QIcon, QPixmap, QIntValidator, QKeySequence
 from PySide2.QtWidgets import QApplication, QDial, QDialog, QMainWindow, QMessageBox, QWidget, QLabel, QCheckBox, QFileDialog, QDesktopWidget, QLineEdit, \
     QRadioButton, QShortcut, QScrollArea, QVBoxLayout, QGroupBox, QFormLayout, QPushButton
 from xlsxwriter.workbook import Workbook
@@ -16,6 +16,8 @@ from ui.labeler_widget import Ui_labeler_widget
 from ui.new_dialog import Ui_new_dialog
 from ui.open_dialog import Ui_open_dialog
 from functools import partial
+
+from rc import resource
 
 def get_img_paths(dir, extensions=('.jpg', '.png', '.jpeg')):
     '''
@@ -492,6 +494,8 @@ class Main_Window(Ui_main_window, QMainWindow):
     def __init__(self) -> None:
         super().__init__()
         self.setupUi(self)
+        self.setWindowIcon(QIcon(":/icons/icon.png"))
+        
         self.new_dialog = New_Dialog()
         self.open_dialog = Open_Dialog()
         self.labeler_widget: Labeler_Widget = None
