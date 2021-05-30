@@ -1,0 +1,6 @@
+XlsxWriter 1.4.3
+certifi==2020.12.5
+numpy==1.20.3
+PySide2==5.15.2
+shiboken2==5.15.2
+XlsxWriter==1.4.3
