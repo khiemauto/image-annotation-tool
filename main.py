@@ -3,7 +3,7 @@ import os
 import shutil
 import sys
 
-import numpy as np
+# import numpy as np
 from PySide2 import QtWidgets
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QIcon, QPixmap, QIntValidator, QKeySequence
@@ -412,9 +412,19 @@ class Labeler_Widget(Ui_labeler_widget, QWidget):
             writer.writerow(['img'] + self.labels)
 
             # write one-hot labels
-            for img_name, labels in self.assigned_labels.items():
-                labels_one_hot = self.labels_to_zero_one(labels)
-                writer.writerow([img_name] + list(labels_one_hot))
+            for img_path in self.img_paths:
+                img_name = os.path.basename(img_path)
+                if img_name in self.assigned_labels:
+                    labels_one_hot = self.labels_to_zero_one(self.assigned_labels[img_name])
+                    writer.writerow([img_name] + list(labels_one_hot))
+                else:
+                    labels_one_hot = self.labels_to_zero_one([])
+                    writer.writerow([img_name] + list(labels_one_hot))
+                    
+
+            # for img_name, labels in self.assigned_labels.items():
+            #     labels_one_hot = self.labels_to_zero_one(labels)
+            #     writer.writerow([img_name] + list(labels_one_hot))
 
         message = f'csv saved to: {csv_file_path}'
         # QStatusBar.showMessage(self, )
